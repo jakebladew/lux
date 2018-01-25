@@ -141,8 +141,8 @@ public:
         assert(hashGenesisBlock == uint256("0x00000759bb3da130d7c9aedae170da8335f5a0d01a9007e4c8d3ccd08ace6a42"));
         assert(genesis.hashMerkleRoot == uint256("0xe08ae0cfc35a1d70e6764f347fdc54355206adeb382446dd54c32cd0201000d3"));
 
-        vSeeds.push_back(CDNSSeedData("45.63.25.110", "45.32.245.217"));
-        vSeeds.push_back(CDNSSeedData("136.243.89.142", "45.76.118.90"));
+        vSeeds.push_back(CDNSSeedData("45.77.44.147", "45.32.245.217")); // SIN - AU
+        vSeeds.push_back(CDNSSeedData("207.246.96.37", "45.76.118.90")); // US - AU
         //vSeeds.push_back(CDNSSeedData("sd3", "45.63.25.110"));
         //vSeeds.push_back(CDNSSeedData("sd4", "136.243.89.142"));        // Single node address
 
