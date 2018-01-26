@@ -1078,7 +1078,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Obfuscation</string>
+              <string>Luxsend</string>
              </property>
             </widget>
            </item>
@@ -1253,4 +1253,3 @@
  <resources/>
  <connections/>
 </ui>
-
