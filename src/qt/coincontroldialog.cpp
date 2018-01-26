@@ -431,8 +431,8 @@ void CoinControlDialog::viewItemChanged(QTreeWidgetItem* item, int column)
         else {
             coinControl->Select(outpt);
             CTxIn vin(outpt);
-            int rounds = pwalletMain->GetInputObfuscationRounds(vin);
-            if (coinControl->useObfuScation && rounds < nObfuscationRounds) {
+            int rounds = GetInputLuxsendRounds(vin);
+            if (coinControl->useObfuScation && rounds < nDarksendRounds) {
                 QMessageBox::warning(this, windowTitle(),
                     tr("Non-anonymized input selected. <b>Obfuscation will be disabled.</b><br><br>If you still want to use Obfuscation, please deselect all non-nonymized inputs first and then check Obfuscation checkbox again."),
                     QMessageBox::Ok, QMessageBox::Ok);
@@ -803,7 +803,7 @@ void CoinControlDialog::updateView()
 
             // ds+ rounds
             CTxIn vin = CTxIn(out.tx->GetHash(), out.i);
-            int rounds = pwalletMain->GetInputObfuscationRounds(vin);
+            int rounds = GetInputLuxsendRounds(vin);
 
             if (rounds >= 0)
                 itemOutput->setText(COLUMN_OBFUSCATION_ROUNDS, strPad(QString::number(rounds), 11, " "));
@@ -864,3 +864,4 @@ void CoinControlDialog::updateView()
     sortView(sortColumn, sortOrder);
     ui->treeWidget->setEnabled(true);
 }
+

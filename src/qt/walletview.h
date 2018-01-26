@@ -6,7 +6,7 @@
 #define BITCOIN_QT_WALLETVIEW_H
 
 #include "amount.h"
-#include "masternodelist.h"
+#include "masternodemanager.h"
 #include "tradingdialog.h"
 
 #include <QStackedWidget>
@@ -66,7 +66,7 @@ private:
     ReceiveCoinsDialog* receiveCoinsPage;
     SendCoinsDialog* sendCoinsPage;
     BlockExplorer* explorerWindow;
-    MasternodeList* masternodeListPage;
+    MasternodeManager* masternodeListPage;
 
     TransactionView* transactionView;
 
@@ -141,3 +141,4 @@ signals:
 };
 
 #endif // BITCOIN_QT_WALLETVIEW_H
+

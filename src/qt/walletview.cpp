@@ -84,7 +84,7 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent),
 
     QSettings settings;
     if (settings.value("fShowMasternodesTab").toBool()) {
-        masternodeListPage = new MasternodeList();
+        masternodeListPage = new MasternodeManager();
         addWidget(masternodeListPage);
     }
 
@@ -164,7 +164,7 @@ void WalletView::setWalletModel(WalletModel* walletModel)
 
         // Balloon pop-up for new transaction
         connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex, int, int)),
-                this, SLOT(processNewTransaction(QModelIndex, int, int)));
+            this, SLOT(processNewTransaction(QModelIndex, int, int)));
 
         // Ask for passphrase if needed
         connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
@@ -301,18 +301,18 @@ void WalletView::encryptWallet(bool status)
 void WalletView::backupWallet()
 {
     QString filename = GUIUtil::getSaveFileName(this,
-                                                tr("Backup Wallet"), QString(),
-                                                tr("Wallet Data (*.dat)"), NULL);
+        tr("Backup Wallet"), QString(),
+        tr("Wallet Data (*.dat)"), NULL);
 
     if (filename.isEmpty())
         return;
 
     if (!walletModel->backupWallet(filename)) {
         emit message(tr("Backup Failed"), tr("There was an error trying to save the wallet data to %1.").arg(filename),
-                     CClientUIInterface::MSG_ERROR);
+            CClientUIInterface::MSG_ERROR);
     } else {
         emit message(tr("Backup Successful"), tr("The wallet data was successfully saved to %1.").arg(filename),
-                     CClientUIInterface::MSG_INFORMATION);
+            CClientUIInterface::MSG_INFORMATION);
     }
 }
 
@@ -387,3 +387,4 @@ void WalletView::trxAmount(QString amount)
 {
     transactionSum->setText(amount);
 }
+

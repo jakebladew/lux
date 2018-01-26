@@ -62,8 +62,8 @@ int ClientModel::getNumConnections(unsigned int flags) const
 
     int nNum = 0;
     BOOST_FOREACH (CNode* pnode, vNodes)
-    if (flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
-        nNum++;
+        if (flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
+            nNum++;
 
     return nNum;
 }
@@ -146,16 +146,16 @@ void ClientModel::updateMnTimer()
     // Get required lock upfront. This avoids the GUI from getting stuck on
     // periodical polls if the core is holding the locks for a longer time -
     // for example, during a wallet rescan.
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain)
-        return;
-    QString newMasternodeCountString = getMasternodeCountString();
-
-    if (cachedMasternodeCountString != newMasternodeCountString) {
-        cachedMasternodeCountString = newMasternodeCountString;
-
-        emit strMasternodesChanged(cachedMasternodeCountString);
-    }
+//    TRY_LOCK(cs_main, lockMain);
+//    if (!lockMain)
+//        return;
+//    QString newMasternodeCountString = getMasternodeCountString();
+//
+//    if (cachedMasternodeCountString != newMasternodeCountString) {
+//        cachedMasternodeCountString = newMasternodeCountString;
+//
+//        emit strMasternodesChanged(cachedMasternodeCountString);
+//    }
 }
 
 void ClientModel::updateNumConnections(int numConnections)
@@ -240,23 +240,23 @@ static void ShowProgress(ClientModel* clientmodel, const std::string& title, int
 {
     // emits signal "showProgress"
     QMetaObject::invokeMethod(clientmodel, "showProgress", Qt::QueuedConnection,
-                              Q_ARG(QString, QString::fromStdString(title)),
-                              Q_ARG(int, nProgress));
+        Q_ARG(QString, QString::fromStdString(title)),
+        Q_ARG(int, nProgress));
 }
 
 static void NotifyNumConnectionsChanged(ClientModel* clientmodel, int newNumConnections)
 {
     // Too noisy: qDebug() << "NotifyNumConnectionsChanged : " + QString::number(newNumConnections);
     QMetaObject::invokeMethod(clientmodel, "updateNumConnections", Qt::QueuedConnection,
-                              Q_ARG(int, newNumConnections));
+        Q_ARG(int, newNumConnections));
 }
 
 static void NotifyAlertChanged(ClientModel* clientmodel, const uint256& hash, ChangeType status)
 {
     qDebug() << "NotifyAlertChanged : " + QString::fromStdString(hash.GetHex()) + " status=" + QString::number(status);
     QMetaObject::invokeMethod(clientmodel, "updateAlert", Qt::QueuedConnection,
-                              Q_ARG(QString, QString::fromStdString(hash.GetHex())),
-                              Q_ARG(int, status));
+        Q_ARG(QString, QString::fromStdString(hash.GetHex())),
+        Q_ARG(int, status));
 }
 
 void ClientModel::subscribeToCoreSignals()
@@ -274,3 +274,4 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
 }
+
