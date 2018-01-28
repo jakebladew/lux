@@ -51,6 +51,8 @@ using namespace std;
 
 CCriticalSection cs_main;
 
+const int LAST_HEIGHT_FEE_BLOCK = 180000;
+
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
 set<pair<COutPoint, unsigned int> > setStakeSeen;
@@ -1617,15 +1619,17 @@ uint256 GetProofOfStakeLimit(int nHeight)
         return bnProofOfStakeLimit;
 }
 
-CAmount GetBlockValue(int nHeight) {
-    int64_t nSubsidy = 1 * COIN;
+CAmount GetBlockValue(int64_t nFees, int nHeight) {
+    CAmount nSubsidy = 1 * COIN;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight < 200 && nHeight > 0)
-            return 250000 * COIN;
+        if (nHeight < 200) return 250000 * COIN;
+            
     }
 
-    if (nHeight == 1) {
+    if (nHeight < 1) {
+        nSubsidy = 1 * COIN;
+    } else if (nHeight == 1) {
         nSubsidy = 3000000 * COIN;
     } else if (nHeight < 500) {
         nSubsidy = 1 * COIN;
@@ -1642,11 +1646,15 @@ CAmount GetBlockValue(int nHeight) {
     } else {
         nSubsidy = 1 * COIN;
     }
-    return nSubsidy + nHeight + 1;
+
+    if (nHeight < LAST_HEIGHT_FEE_BLOCK) {
+        nFees = nHeight;
+    }
+    return nSubsidy + nFees;
 }
 
 CAmount GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, int nHeight) {
-    int64_t nSubsidy = STATIC_POS_REWARD;
+     CAmount nSubsidy = STATIC_POS_REWARD;
 
     // First 100,000 blocks double stake for masternode ready
     if(pindexBestHeader->nHeight < 100000) {
@@ -1705,7 +1713,7 @@ bool IsBlockValueValid(const CBlock& block, int64_t nExpectedValue)
 }
 
 
-int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
+CAmount GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
 {
     int64_t ret = blockValue * 0.4; //40% for masternodes
 
@@ -2248,10 +2256,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     if (block.IsProofOfWork()) {
-        if (/*!IsInitialBlockDownload() && */!IsBlockValueValid(block, GetBlockValue(pindex->pprev->nHeight))) {
-            return state.DoS(100,
-                             error("ConnectBlock() : %d reward pays too much  (actual=%d vs limit=%d) fee: %d",
-                                   pindex->nHeight, block.vtx[0].GetValueOut(), GetBlockValue(pindex->pprev->nHeight), nFees),
+        auto nReward = GetBlockValue(nFees, /*pindex->nHeight*/pindex->pprev->nHeight);
+            if (!IsInitialBlockDownload() && !IsBlockValueValid(block, nReward)) {
+                             return state.DoS(100, error("%s: reward pays too much (actual=%d vs limit=%d) (nHeight=%d, nFees=%d)", __func__,
+                                   block.vtx[0].GetValueOut(), nReward, pindex->nHeight, nFees),
                              REJECT_INVALID, "bad-cb-amount");
         }
     }

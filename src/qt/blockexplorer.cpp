@@ -223,8 +223,8 @@ std::string BlockToString(CBlockIndex* pBlock)
     int64_t Generated;
     if (pBlock->nHeight == 0)
         Generated = OutVolume;
-    else
-        Generated = GetBlockValue(pBlock->nHeight - 1);
+//    else
+//        Generated = GetBlockValue(pBlock->nHeight - 1);
 
     std::string BlockContentCells[] =
         {
